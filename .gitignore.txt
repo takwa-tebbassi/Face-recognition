@@ -1,0 +1,20 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+facerec-env/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# dlib compiled folders or build files
+build/
+dist/
+*.egg-info/
+dlib/
+
+
