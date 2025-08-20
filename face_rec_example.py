@@ -12,7 +12,7 @@ import cv2  # to do image tests
 KNOWN_FACES_DIR = "known_faces"
 UNKNOWN_FACES_DIR = "unknown_faces"
 TOLERANCE = 0.6
-FRAME_THIKNESS = 3
+FRAME_THIKNESS = 2
 FONT_THINKNESS = 2
 MODEL = "cnn"  #hog
 
@@ -22,12 +22,24 @@ known_faces = []
 known_names = []
 
 for name in os.listdir(KNOWN_FACES_DIR):
-    for filename in os.listdir(f"{KNOWN_FACES_DIR}/{name}"):
+    person_dir = os.path.join(KNOWN_FACES_DIR, name)
 
-        image = face_recognition.load_image_file(f"{KNOWN_FACES_DIR}/{name}")
-        encoding = face_recognition.face_encodings(image)[0]
-        known_faces.append(encoding)
-        known_names.append(name)
+    if not os.path.isdir(person_dir):
+        continue
+
+    for filename in os.listdir(person_dir):
+        filepath = os.path.join(person_dir, filename)
+
+        image = face_recognition.load_image_file(filepath)
+        encodings = face_recognition.face_encodings(image)
+
+        if len(encodings) > 0:
+            encoding = encodings[0]
+            known_faces.append(encoding)
+            known_names.append(name)
+        else:
+            print(f"[WARN] No face found in {filepath}")
+
 
 print("processing unknown faces")
 
@@ -48,7 +60,7 @@ for filename in os.listdir(UNKNOWN_FACES_DIR):
             top_left = (face_location[3], face_location[0])
             bottom_right = (face_location[1], face_location[2])
 
-            color = [0, 255, 0]
+            color = [255, 0, 0]
 
             cv2.rectangle(image,top_left, bottom_right, color, FRAME_THIKNESS)
 
@@ -56,8 +68,8 @@ for filename in os.listdir(UNKNOWN_FACES_DIR):
             bottom_right = (face_location[1], face_location[2]+22)
             cv2.rectangle(image,top_left, bottom_right, color, cv2.FILLED)
 
-            cv2.putText(image, match, (face_location[3]+10, face_location[2]+15, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200,200,200), FONT_THINKNESS))
+            cv2.putText(image, match, (face_location[3]+10, face_location[2]+15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200,200,200), FONT_THINKNESS)
 
     cv2.imshow(filename, image)
-    cv2.waitKey(10000)  # 10 secs
+    cv2.waitKey(1000)  # 1 sec
     #cv2.destroyWindow(filename)
